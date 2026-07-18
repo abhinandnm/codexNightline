@@ -29,6 +29,8 @@ The product focuses on:
 - grouping riders travelling toward nearby final destinations to make shared travel practical
 - giving drivers ready-made passenger clusters instead of individual, inefficient trips
 - providing a unified journey experience instead of disconnected metro and cab bookings
+- creating a premium, hassle-free passenger experience with one booking, one payment, and guided handoffs
+- keeping travel budget-friendly by sharing the last-mile ride among passengers heading toward compatible destinations
 
 ## Revenue leakage prevention
 
@@ -39,17 +41,24 @@ The product focuses on:
 - The API’s admin overview exposes booking, open-cluster, and driver-availability counts for operational monitoring.
 - QR-ticket and gate guidance give the prototype a clear place to connect ticket validation and payment reconciliation in a production KMRL integration.
 
+## Proposed KMRL revenue model
+
+- KMRL receives a proposed **15% commission** on each last-mile trip completed by a partner driver through the Driver Portal.
+- For a KMRL-operated feeder bus, KMRL retains **100% of the applicable feeder fare** through the unified payment flow.
+- API-backed bookings, driver acceptance, completion status, and wallet records create an auditable settlement trail for every last-mile transaction.
+- The model turns fragmented informal last-mile payments into a measurable KMRL revenue channel while keeping shared rides more affordable for passengers.
+
 ## Features
 
 ### Passenger Booking Portal
 
 - Prototype sign-in with any username and password `123`
-- Station-only start selection and typed final-destination search suggestions
+- Station-only start selection and final-destination dropdown choices for the prototype
 - Standard metro ticket and recommended Unified Booking choices
 - Unified metro, shared last-mile, and single-payment journey summary
 - Destination-aware smart grouping with nearest-station and pickup-zone assignment
 - Guided rider flow: booking, station boarding confirmation, metro journey, arrival-zone handoff, cab/feeder confirmation, and final-destination completion
-- Random demo driver assignment and in-app travel-partner help action
+- Live driver-assignment status and in-app travel-partner help action
 
 ### Driver Portal
 
