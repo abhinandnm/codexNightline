@@ -23,10 +23,16 @@ export default function App() {
   const [boarding, setBoarding] = useState(false)
   const [tripStarted, setTripStarted] = useState(false)
   const [driver, setDriver] = useState(drivers[0])
+  const [userName, setUserName] = useState('')
+  const [password, setPassword] = useState('')
+  const [signedIn, setSignedIn] = useState(false)
+  const [loginError, setLoginError] = useState('')
 
   const fares = useMemo(() => journeyKind === 'orbit'
     ? { amount: 78, label: 'Metro + shared last mile', saving: '₹24 less than a solo cab' }
     : { amount: 42, label: 'Metro ticket only', saving: 'Best value metro fare' }, [journeyKind])
+
+  if (!signedIn) return <main className="app-shell matching"><div className="matching-orb"><TrainFront size={28}/></div><p className="overline dark">KOCHI METRO</p><h1>Welcome aboard.</h1><p>Enter your name to begin your unified journey.</p><input className="login-input" value={userName} onChange={(event) => setUserName(event.target.value)} placeholder="Your name" /><input className="login-input" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password" /><button className="primary-button" onClick={() => { if (userName.trim() && password === '123') { setSignedIn(true); setLoginError('') } else setLoginError('Enter any name and password 123.') }}>Continue <span>→</span></button>{loginError && <small className="login-error">{loginError}</small>}<small>Prototype password: 123</small></main>
 
   if (confirmed) {
     return <Confirmation from={from} to={to} pickup={pickup} driver={driver} fare={fares.amount} orbit={journeyKind === 'orbit'} onBack={() => setConfirmed(false)} />
@@ -35,7 +41,7 @@ export default function App() {
   const submitBooking = async () => {
     setMatching(true)
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8002/api'}/bookings`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({passenger_name:'Abhinand Nm', origin:from, destination:to, journey_type:journeyKind}) })
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8002/api'}/bookings`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({passenger_name:userName.trim(), origin:from, destination:to, journey_type:journeyKind}) })
       const result = await response.json()
       if (!response.ok) throw new Error(result.error || 'Booking failed')
       if (result.booking.pickup_zone) setPickup(result.booking.pickup_zone)
