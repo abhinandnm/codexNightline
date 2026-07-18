@@ -11,3 +11,7 @@ KMRL Orbit is an AI-assisted last-mile journey layer for metro passengers. This 
 ## Local development
 
 Install the frontend dependencies in each portal, then run `npm run dev`. For the API, create a Python virtual environment, install `backend/requirements.txt`, and run `flask --app app run --debug` from `backend`.
+
+## Prototype sign-in
+
+Use any username with password `123` in the Passenger Portal prototype.

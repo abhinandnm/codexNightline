@@ -11,11 +11,11 @@ const stations = ['Aluva', 'Edappally', 'Kaloor', 'MG Road', 'Maharaja’s Colle
 const pickupZones = ['South gate · Zone B', 'North gate · Zone A', 'Metro feeder bay · Zone C']
 const metroStations = ['Aluva Metro Station', 'Edappally Metro Station', 'Kaloor Metro Station', 'MG Road Metro Station', 'Maharaja’s College Metro Station', 'Vyttila Metro Station', 'Pettta Metro Station']
 const finalDestinations = ['Aluva Bus Stand', 'Aluva Mahadeva Temple', 'UC College, Aluva', 'Lulu Mall, Edappally', 'Infopark, Kakkanad', 'Marine Drive, Kochi', 'Fort Kochi', 'Tripunithura']
-const drivers = [{ initials: 'RK', name: 'Rakesh Kumar', vehicle: 'KL 07 CD 4531' }, { initials: 'AN', name: 'Anjali Nair', vehicle: 'KL 41 M 7812' }, { initials: 'SP', name: 'Sreejith Paul', vehicle: 'KL 39 J 2046' }]
+const drivers = [{ initials: 'RK', name: 'Rakesh Kumar', vehicle: 'KL 07 CD 4531', mode: 'cab' }, { initials: 'AN', name: 'Anjali Nair', vehicle: 'KL 41 M 7812', mode: 'feeder' }, { initials: 'SP', name: 'Sreejith Paul', vehicle: 'KL 39 J 2046', mode: 'cab' }]
 
 export default function App() {
   const [journeyKind, setJourneyKind] = useState<JourneyKind>('orbit')
-  const [from, setFrom] = useState('Aluva Metro')
+  const [from, setFrom] = useState('')
   const [to, setTo] = useState('Infopark, Kakkanad')
   const [pickup, setPickup] = useState(pickupZones[0])
   const [confirmed, setConfirmed] = useState(false)
@@ -60,12 +60,12 @@ export default function App() {
     <main className="app-shell">
       <section className="hero-panel">
         <div className="topbar">
-          <button className="icon-button" aria-label="Back"><ArrowLeft size={20} /></button>
+          <span />
           <div className="brand"><span className="brand-mark">K</span><span>KOCHI METRO</span></div>
           <button className="icon-button notification" aria-label="Notifications"><Bell size={19} /><i /></button>
         </div>
         <div className="hero-copy">
-          <p className="overline">GOOD EVENING, ABHIN</p>
+          <p className="overline">GOOD EVENING, {userName.toUpperCase()}</p>
           <h1>Where will the metro<br />take you today?</h1>
           <div className="weather-chip"><CloudRain size={16} /> 27°C · Light rain near Aluva</div>
         </div>
@@ -116,5 +116,7 @@ function TimelineRow({ icon, title, meta, last = false }: { icon: React.ReactNod
 }
 
 function Confirmation({ from, to, pickup, driver, fare, orbit, onBack }: { from: string; to: string; pickup: string; driver: typeof drivers[number]; fare: number; orbit: boolean; onBack: () => void }) {
-  return <main className="app-shell confirmation-page"><section className="confirm-hero"><div className="topbar"><button className="icon-button light" onClick={onBack} aria-label="Back"><ArrowLeft size={20} /></button><div className="brand light-brand"><span className="brand-mark">K</span><span>KOCHI METRO</span></div><span /></div><div className="success-ring"><MapPin size={31} /></div><p className="overline">YOUR PICKUP ZONE IS READY</p><h1>Go to your assigned zone.</h1><p className="confirm-subtitle">Walk to the zone below and wait for your shared cab towards {to}.</p></section><section className="ticket-sheet"><div className="ticket-route"><div><small>FROM</small><strong>{from}</strong></div><Navigation size={20} /><div className="right"><small>TO</small><strong>{to}</strong></div></div><div className="ticket-meta"><span><Clock3 size={16} /> Depart in 14 min</span><span><CreditCard size={16} /> ₹{fare} paid</span></div>{orbit && <div className="driver-card"><div className="driver-avatar">{driver.initials}</div><div><small>DRIVER WAITING AT YOUR ZONE</small><strong>{driver.name} · {driver.vehicle}</strong><p><MapPin size={14} /> {pickup}</p></div><button className="icon-button"><Navigation size={18} /></button></div>}<div className="qr-box"><QrCode size={78} /><div><strong>Show at the metro gate</strong><p>Then follow the zone guidance in this app.</p></div></div><button className="primary-button" onClick={onBack}>I’m heading to the zone <span>→</span></button><button className="rebook-button" onClick={() => window.alert('Kochi Metro support has been notified. A travel assistant will contact you shortly.')}>Trouble finding your travel buddy? Get help</button></section></main>
+  const [foundRide, setFoundRide] = useState(false)
+  const rideLabel = driver.mode === 'feeder' ? 'feeder' : 'cab'
+  return <main className="app-shell confirmation-page"><section className="confirm-hero"><div className="topbar"><button className="icon-button light" onClick={onBack} aria-label="Back"><ArrowLeft size={20} /></button><div className="brand light-brand"><span className="brand-mark">K</span><span>KOCHI METRO</span></div><span /></div><div className="success-ring"><MapPin size={31} /></div><p className="overline">YOUR PICKUP ZONE IS READY</p><h1>{foundRide ? 'Thank you for using Kochi Metro.' : 'Go to your assigned zone.'}</h1><p className="confirm-subtitle">{foundRide ? `Your ${rideLabel} will leave for ${to} shortly.` : `Walk to the zone below and wait for your assigned ${rideLabel}.`}</p></section><section className="ticket-sheet"><div className="ticket-route"><div><small>FROM</small><strong>{from}</strong></div><Navigation size={20} /><div className="right"><small>TO</small><strong>{to}</strong></div></div><div className="ticket-meta"><span><Clock3 size={16} /> Depart in 14 min</span><span><CreditCard size={16} /> ₹{fare} paid</span></div>{orbit && <div className="driver-card"><div className="driver-avatar">{driver.initials}</div><div><small>{driver.mode.toUpperCase()} WAITING AT YOUR ZONE</small><strong>{driver.name} · {driver.vehicle}</strong><p><MapPin size={14} /> {pickup}</p></div><button className="icon-button"><Navigation size={18} /></button></div>}<div className="qr-box"><QrCode size={78} /><div><strong>{foundRide ? `Leaving for ${to}` : `Have you found your ${rideLabel}?`}</strong><p>{foundRide ? 'Your final leg is now underway.' : `Look for ${driver.name} at the assigned zone.`}</p></div></div>{foundRide ? <button className="primary-button" onClick={onBack}>Book another journey <span>→</span></button> : <><button className="primary-button" onClick={() => setFoundRide(true)}>Yes, I found my {rideLabel} <span>→</span></button><button className="rebook-button" onClick={() => window.alert('Kochi Metro support has been notified. A travel assistant will contact you shortly.')}>Trouble finding your travel buddy? Get help</button></>}</section></main>
 }
