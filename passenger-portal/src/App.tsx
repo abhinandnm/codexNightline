@@ -27,6 +27,7 @@ export default function App() {
   const [password, setPassword] = useState('')
   const [signedIn, setSignedIn] = useState(false)
   const [loginError, setLoginError] = useState('')
+  const [bookingError, setBookingError] = useState('')
 
   const fares = useMemo(() => journeyKind === 'orbit'
     ? { amount: 78, label: 'Metro + shared last mile', saving: '₹24 less than a solo cab' }
@@ -39,7 +40,7 @@ export default function App() {
   }
 
   const submitBooking = async () => {
-    setMatching(true)
+    setMatching(true); setBookingError('')
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8002/api'}/bookings`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({passenger_name:userName.trim(), origin:from, destination:to, journey_type:journeyKind}) })
       const result = await response.json()
@@ -49,6 +50,8 @@ export default function App() {
       await new Promise((resolve) => setTimeout(resolve, 10000))
       setMatching(false)
       setBoarding(true)
+    } catch (error) {
+      setBookingError(error instanceof Error ? error.message : 'Unable to reach the booking service. Please try again.')
     } finally { setMatching(false) }
   }
   const confirmBoarding = async () => { setBoarding(false); setTripStarted(true); await new Promise((resolve) => setTimeout(resolve, 5000)); setTripStarted(false); setConfirmed(true) }
@@ -98,7 +101,7 @@ export default function App() {
           <div><p className="fare-label">{fares.label}</p><p className="fare-saving"><ShieldCheck size={14} /> {fares.saving}</p></div>
           <strong>₹{fares.amount}</strong>
         </section>
-        <button className="primary-button" onClick={submitBooking}>{journeyKind === 'orbit' ? 'Book unified journey' : 'Continue with metro'} <span>→</span></button>
+        <button className="primary-button" onClick={submitBooking}>{journeyKind === 'orbit' ? 'Book unified journey' : 'Continue with metro'} <span>→</span></button>{bookingError && <p className="booking-error">{bookingError}</p>}
         <div className="bottom-note"><WalletCards size={16} /> Payment stays together in one secure checkout</div>
       </section>
     </main>
