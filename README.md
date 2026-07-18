@@ -2,6 +2,8 @@
 
 Kochi Metro Unified Ticketing is a smart metro and last-mile journey platform. It uses destination-aware passenger grouping, nearest-station mapping, and pickup-zone assignment to bring ticket booking, shared feeder transport, guidance, and driver operations into one connected experience. This repository contains independent passenger and driver React portals plus a Flask REST API, deployed in production on AWS EC2.
 
+> **Prototype notice:** All stations, final destinations, pickup zones, routes, fares, vehicle details, and driver data shown in this application are representative demo data for prototyping. They may differ from real-world KMRL operations and should be validated against official operational data before production use.
+
 ## Applications
 
 - `passenger-portal` — traveller booking experience
