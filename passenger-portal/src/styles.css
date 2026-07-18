@@ -9,6 +9,7 @@
 @layer base { * { box-sizing: border-box; } body { margin: 0; min-width: 320px; background: #152825; color: #122c28; font-family: Manrope, sans-serif; } button, select { font: inherit; } button { cursor: pointer; } }
 @layer components {
   .app-shell { margin: 0 auto; min-height: 100vh; max-width: 480px; overflow: hidden; background: #f7f7f2; box-shadow: 0 0 60px #09151280; }
+  @media (min-width: 700px) { .app-shell:not(.confirmation-page):not(.matching) { width: min(1120px, calc(100% - 48px)); max-width: 1120px; } }
   .hero-panel { position: relative; min-height: 392px; padding: 22px 24px 0; color: white; background: radial-gradient(circle at 95% 10%, #50b39a 0, transparent 28%), linear-gradient(145deg, #063d3a, #0d5c55 62%, #14716a); }
   .hero-panel::after { content: ''; position: absolute; inset: auto -30px 7px; height: 80px; transform: rotate(-8deg); background: #c9d6a4; opacity: .12; }
   .topbar { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 1; } .topbar > span { width: 40px; }
