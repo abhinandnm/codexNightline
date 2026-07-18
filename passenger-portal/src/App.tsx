@@ -32,7 +32,7 @@ export default function App() {
   const submitBooking = async () => {
     setMatching(true)
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8001/api'}/bookings`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({passenger_name:'Abhinand Nm', origin:from, destination:to, journey_type:journeyKind}) })
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8002/api'}/bookings`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({passenger_name:'Abhinand Nm', origin:from, destination:to, journey_type:journeyKind}) })
       const result = await response.json()
       if (!response.ok) throw new Error(result.error || 'Booking failed')
       if (result.booking.pickup_zone) setPickup(result.booking.pickup_zone)
