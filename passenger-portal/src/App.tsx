@@ -95,8 +95,8 @@ export default function App() {
         </div>
         <div className="route-card">
           <div className="route-line"><span className="origin-dot" /><span className="route-stem" /><span className="destination-dot" /></div>
-          <label>START METRO STATION<input list="metro-stations" value={from} onChange={(event) => setFrom(event.target.value)} placeholder="Choose your station" /></label>
-          <label>FINAL DESTINATION<input list="final-destinations" value={to} onChange={(event) => setTo(event.target.value)} placeholder="Where are you going?" /></label>
+          <label>START METRO STATION<select value={from} onChange={(event) => setFrom(event.target.value)}><option value="" disabled>Choose your station</option>{metroStations.map((location) => <option key={location} value={location}>{location}</option>)}</select></label>
+          <label>FINAL DESTINATION<select value={to} onChange={(event) => setTo(event.target.value)}><option value="" disabled>Choose your destination</option>{finalDestinations.map((location) => <option key={location} value={location}>{location}</option>)}</select></label>
           <button className="swap-button" aria-label="Swap stations">⇅</button>
           <datalist id="metro-stations">{metroStations.map((location) => <option key={location} value={location} />)}</datalist><datalist id="final-destinations">{finalDestinations.map((location) => <option key={location} value={location} />)}</datalist>
         </div>
