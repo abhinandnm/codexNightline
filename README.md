@@ -1,6 +1,6 @@
 # Kochi Metro Unified Ticketing
 
-Kochi Metro Unified Ticketing is an AI-assisted metro and last-mile journey platform. It brings ticket booking, passenger grouping, shared feeder transport, pickup-zone guidance, and driver operations into one connected experience. This repository contains independent passenger and driver React portals plus a Flask REST API, deployed in production on AWS EC2.
+Kochi Metro Unified Ticketing is a smart metro and last-mile journey platform. It uses destination-aware passenger grouping, nearest-station mapping, and pickup-zone assignment to bring ticket booking, shared feeder transport, guidance, and driver operations into one connected experience. This repository contains independent passenger and driver React portals plus a Flask REST API, deployed in production on AWS EC2.
 
 ## Applications
 
@@ -45,7 +45,7 @@ The product focuses on:
 - Station-only start selection and typed final-destination search suggestions
 - Standard metro ticket and recommended Unified Booking choices
 - Unified metro, shared last-mile, and single-payment journey summary
-- AI destination grouping with a nearest-station and pickup-zone assignment
+- Destination-aware smart grouping with nearest-station and pickup-zone assignment
 - Guided rider flow: booking, station boarding confirmation, metro journey, arrival-zone handoff, cab/feeder confirmation, and final-destination completion
 - Random demo driver assignment and in-app travel-partner help action
 
@@ -56,7 +56,7 @@ The product focuses on:
 - Accept, start, and complete trip workflow
 - Earnings, wallet, navigation, and trip-history entry points
 
-### Backend API and AI grouping
+### Backend API and smart grouping
 
 - Flask REST API with Flask-CORS and SQLite storage designed for a future PostgreSQL replacement
 - Passenger booking, station lookup, journey quotes, driver availability, cluster acceptance, and admin overview endpoints
