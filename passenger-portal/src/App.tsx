@@ -9,7 +9,8 @@ type JourneyKind = 'standard' | 'orbit'
 
 const stations = ['Aluva', 'Edappally', 'Kaloor', 'MG Road', 'Maharaja’s College', 'Vyttila', 'Pettta']
 const pickupZones = ['South gate · Zone B', 'North gate · Zone A', 'Metro feeder bay · Zone C']
-const nearbyLocations = ['Aluva Metro Station', 'Aluva Bus Stand', 'Aluva Mahadeva Temple', 'Companypady', 'UC College, Aluva', 'Desom, Aluva', 'Edappally Metro Station', 'Lulu Mall, Edappally', 'Kaloor Metro Station', 'MG Road Metro Station', 'Maharaja’s College Metro Station', 'Vyttila Metro Station', 'Pettta Metro Station', 'Infopark, Kakkanad', 'Marine Drive, Kochi']
+const metroStations = ['Aluva Metro Station', 'Edappally Metro Station', 'Kaloor Metro Station', 'MG Road Metro Station', 'Maharaja’s College Metro Station', 'Vyttila Metro Station', 'Pettta Metro Station']
+const finalDestinations = ['Aluva Bus Stand', 'Aluva Mahadeva Temple', 'UC College, Aluva', 'Lulu Mall, Edappally', 'Infopark, Kakkanad', 'Marine Drive, Kochi', 'Fort Kochi', 'Tripunithura']
 
 export default function App() {
   const [journeyKind, setJourneyKind] = useState<JourneyKind>('orbit')
@@ -59,10 +60,10 @@ export default function App() {
         </div>
         <div className="route-card">
           <div className="route-line"><span className="origin-dot" /><span className="route-stem" /><span className="destination-dot" /></div>
-          <label>START<input list="nearby-locations" value={from} onChange={(event) => setFrom(event.target.value)} placeholder="Search near Aluva" /></label>
-          <label>DESTINATION<input list="nearby-locations" value={to} onChange={(event) => setTo(event.target.value)} placeholder="Where are you going?" /></label>
+          <label>START METRO STATION<input list="metro-stations" value={from} onChange={(event) => setFrom(event.target.value)} placeholder="Choose your station" /></label>
+          <label>FINAL DESTINATION<input list="final-destinations" value={to} onChange={(event) => setTo(event.target.value)} placeholder="Where are you going?" /></label>
           <button className="swap-button" aria-label="Swap stations">⇅</button>
-          <datalist id="nearby-locations">{nearbyLocations.map((location) => <option key={location} value={location} />)}</datalist>
+          <datalist id="metro-stations">{metroStations.map((location) => <option key={location} value={location} />)}</datalist><datalist id="final-destinations">{finalDestinations.map((location) => <option key={location} value={location} />)}</datalist>
         </div>
       </section>
 
@@ -76,9 +77,8 @@ export default function App() {
         {journeyKind === 'orbit' && <section className="orbit-details">
           <div className="orbit-heading"><div className="sparkle-orb"><Sparkles size={18} /></div><div><strong>Smarter together</strong><p>AI is matching your last-mile ride</p></div><span className="match-chip"><UsersRound size={14} /> 3 nearby</span></div>
           <div className="timeline">
-            <TimelineRow icon={<TrainFront size={17} />} title="Board at Aluva" meta="Green line · 18 min" />
-            <TimelineRow icon={<Footprints size={17} />} title="AI-selected pickup zone" meta="Assigned after nearby destination grouping" />
-            <div className="pickup-select"><MapPin size={17} /><strong>Zone assigned after metro arrival</strong><ChevronDown size={16} /></div>
+            <TimelineRow icon={<TrainFront size={17} />} title="Board at your metro station" meta="Your ticket covers the metro segment" />
+            <TimelineRow icon={<Footprints size={17} />} title="Arrive at the nearest metro station" meta="Zone guidance appears only after arrival" />
             <TimelineRow icon={<Bike size={17} />} title="Share the last mile" meta="Weather-aware route · 12 min" last />
           </div>
         </section>}
