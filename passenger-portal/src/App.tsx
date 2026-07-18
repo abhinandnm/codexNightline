@@ -4,6 +4,7 @@ import {
   CreditCard, Footprints, MapPin, Navigation, QrCode, ShieldCheck, Sparkles,
   Ticket, TrainFront, UsersRound, WalletCards,
 } from 'lucide-react'
+import { bookJourney } from './api'
 
 type JourneyKind = 'standard' | 'orbit'
 
@@ -16,6 +17,8 @@ export default function App() {
   const [to, setTo] = useState('Maharaja’s College')
   const [pickup, setPickup] = useState(pickupZones[0])
   const [confirmed, setConfirmed] = useState(false)
+  const [booking, setBooking] = useState(false)
+  const [error, setError] = useState('')
 
   const fares = useMemo(() => journeyKind === 'orbit'
     ? { amount: 78, label: 'Metro + shared last mile', saving: '₹24 less than a solo cab' }
@@ -25,6 +28,12 @@ export default function App() {
     return <Confirmation from={from} to={to} pickup={pickup} fare={fares.amount} orbit={journeyKind === 'orbit'} onBack={() => setConfirmed(false)} />
   }
 
+  const submitBooking = async () => {
+    setBooking(true); setError('')
+    try { await bookJourney({ passenger_name: 'Abhinand Nm', origin: from, destination: to, journey_type: journeyKind, pickup_zone: journeyKind === 'orbit' ? pickup : undefined }); setConfirmed(true) }
+    catch (reason) { setError(reason instanceof Error ? reason.message : 'Could not reach Orbit API.') }
+    finally { setBooking(false) }
+  }
   return (
     <main className="app-shell">
       <section className="hero-panel">
@@ -67,7 +76,7 @@ export default function App() {
           <div><p className="fare-label">{fares.label}</p><p className="fare-saving"><ShieldCheck size={14} /> {fares.saving}</p></div>
           <strong>₹{fares.amount}</strong>
         </section>
-        <button className="primary-button" onClick={() => setConfirmed(true)}>{journeyKind === 'orbit' ? 'Book unified journey' : 'Continue with metro'} <span>→</span></button>
+        <button className="primary-button" disabled={booking} onClick={submitBooking}>{booking ? 'Reserving journey…' : journeyKind === 'orbit' ? 'Book unified journey' : 'Continue with metro'} <span>→</span></button>{error && <p className="api-error">{error}</p>}
         <div className="bottom-note"><WalletCards size={16} /> Payment stays together in one secure checkout</div>
       </section>
     </main>
