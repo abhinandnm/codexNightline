@@ -16,7 +16,7 @@ const drivers = [{ initials: 'RK', name: 'Rakesh Kumar', vehicle: 'KL 07 CD 4531
 export default function App() {
   const [journeyKind, setJourneyKind] = useState<JourneyKind>('orbit')
   const [from, setFrom] = useState('')
-  const [to, setTo] = useState('Infopark, Kakkanad')
+  const [to, setTo] = useState('')
   const [pickup, setPickup] = useState(pickupZones[0])
   const [confirmed, setConfirmed] = useState(false)
   const [matching, setMatching] = useState(false)
