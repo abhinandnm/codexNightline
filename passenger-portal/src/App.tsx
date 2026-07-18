@@ -12,8 +12,8 @@ const pickupZones = ['South gate · Zone B', 'North gate · Zone A', 'Metro feed
 
 export default function App() {
   const [journeyKind, setJourneyKind] = useState<JourneyKind>('orbit')
-  const [from, setFrom] = useState('Aluva')
-  const [to, setTo] = useState('Maharaja’s College')
+  const [from, setFrom] = useState('Aluva Metro')
+  const [to, setTo] = useState('Infopark, Kakkanad')
   const [pickup, setPickup] = useState(pickupZones[0])
   const [confirmed, setConfirmed] = useState(false)
   const [matching, setMatching] = useState(false)
@@ -34,7 +34,7 @@ export default function App() {
       const result = await response.json()
       if (!response.ok) throw new Error(result.error || 'Booking failed')
       if (result.booking.pickup_zone) setPickup(result.booking.pickup_zone)
-      await new Promise((resolve) => setTimeout(resolve, 7000))
+      await new Promise((resolve) => setTimeout(resolve, 10000))
       setMatching(false)
       setTripStarted(true)
       await new Promise((resolve) => setTimeout(resolve, 5000))
@@ -58,8 +58,8 @@ export default function App() {
         </div>
         <div className="route-card">
           <div className="route-line"><span className="origin-dot" /><span className="route-stem" /><span className="destination-dot" /></div>
-          <label>FROM<select value={from} onChange={(event) => setFrom(event.target.value)}>{stations.map((station) => <option key={station}>{station}</option>)}</select></label>
-          <label>TO<select value={to} onChange={(event) => setTo(event.target.value)}>{stations.map((station) => <option key={station}>{station}</option>)}</select></label>
+          <label>START<input value={from} onChange={(event) => setFrom(event.target.value)} /></label>
+          <label>DESTINATION<input value={to} onChange={(event) => setTo(event.target.value)} /></label>
           <button className="swap-button" aria-label="Swap stations">⇅</button>
         </div>
       </section>
@@ -76,7 +76,7 @@ export default function App() {
           <div className="timeline">
             <TimelineRow icon={<TrainFront size={17} />} title="Board at Aluva" meta="Green line · 18 min" />
             <TimelineRow icon={<Footprints size={17} />} title="AI-selected pickup zone" meta="Assigned after nearby destination grouping" />
-            <div className="pickup-select"><MapPin size={17} /><strong>{pickup}</strong><ChevronDown size={16} /></div>
+            <div className="pickup-select"><MapPin size={17} /><strong>Zone assigned after metro arrival</strong><ChevronDown size={16} /></div>
             <TimelineRow icon={<Bike size={17} />} title="Share the last mile" meta="Weather-aware route · 12 min" last />
           </div>
         </section>}
