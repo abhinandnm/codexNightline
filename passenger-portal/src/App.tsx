@@ -9,6 +9,7 @@ type JourneyKind = 'standard' | 'orbit'
 
 const stations = ['Aluva', 'Edappally', 'Kaloor', 'MG Road', 'Maharaja’s College', 'Vyttila', 'Pettta']
 const pickupZones = ['South gate · Zone B', 'North gate · Zone A', 'Metro feeder bay · Zone C']
+const nearbyLocations = ['Aluva Metro Station', 'Aluva Bus Stand', 'Aluva Mahadeva Temple', 'Companypady', 'UC College, Aluva', 'Desom, Aluva', 'Infopark, Kakkanad', 'Marine Drive, Kochi']
 
 export default function App() {
   const [journeyKind, setJourneyKind] = useState<JourneyKind>('orbit')
@@ -58,9 +59,10 @@ export default function App() {
         </div>
         <div className="route-card">
           <div className="route-line"><span className="origin-dot" /><span className="route-stem" /><span className="destination-dot" /></div>
-          <label>START<input value={from} onChange={(event) => setFrom(event.target.value)} /></label>
-          <label>DESTINATION<input value={to} onChange={(event) => setTo(event.target.value)} /></label>
+          <label>START<input list="nearby-locations" value={from} onChange={(event) => setFrom(event.target.value)} placeholder="Search near Aluva" /></label>
+          <label>DESTINATION<input list="nearby-locations" value={to} onChange={(event) => setTo(event.target.value)} placeholder="Where are you going?" /></label>
           <button className="swap-button" aria-label="Swap stations">⇅</button>
+          <datalist id="nearby-locations">{nearbyLocations.map((location) => <option key={location} value={location} />)}</datalist>
         </div>
       </section>
 
