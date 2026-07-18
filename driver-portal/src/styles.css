@@ -1,0 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base { body { @apply m-0 min-w-[320px] bg-slate-950 font-sans text-slate-950; } }
+@layer components { .shell { @apply mx-auto min-h-screen max-w-md bg-[#f7f8f5] p-6; } .eyebrow { @apply text-xs font-extrabold tracking-[0.2em] text-teal-700; } h1 { @apply mt-3 font-serif text-4xl font-bold leading-tight; } }
