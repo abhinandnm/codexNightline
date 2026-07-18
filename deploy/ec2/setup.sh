@@ -34,7 +34,7 @@ install -m 0644 "$APP_DIR/deploy/ec2/kmrl-orbit-api.service" /etc/systemd/system
 install -m 0644 "$APP_DIR/deploy/ec2/nginx-kmrl-orbit.conf" /etc/nginx/sites-available/kmrl-orbit
 ln -sf /etc/nginx/sites-available/kmrl-orbit /etc/nginx/sites-enabled/kmrl-orbit
 rm -f /etc/nginx/sites-enabled/default
-chown -R kmrlorbit:www-data "$APP_DIR/backend/instance"
+install -d -m 0750 -o kmrlorbit -g www-data "$APP_DIR/backend/instance"
 systemctl daemon-reload
 systemctl enable --now kmrl-orbit-api
 nginx -t
