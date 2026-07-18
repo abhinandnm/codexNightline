@@ -6,7 +6,7 @@ type AssignedDriver = { initials: string; name: string; vehicle: string; mode: '
 type BookingStatus = { clusterStatus: string; clusterPassengerCount: number; assignedZone: string; driverName?: string }
 
 const metroStations = ['Aluva Metro Station', 'Edappally Metro Station', 'Kaloor Metro Station', 'MG Road Metro Station', 'Maharaja’s College Metro Station', 'Vyttila Metro Station', 'Pettta Metro Station']
-const finalDestinations = ['Aluva Bus Stand', 'Aluva Mahadeva Temple', 'UC College, Aluva', 'Lulu Mall, Edappally', 'Infopark, Kakkanad', 'Marine Drive, Kochi', 'Fort Kochi', 'Tripunithura']
+const finalDestinations = ['Lulu Mall, Edappally', 'Vyttila Mobility Hub', 'MG Road, Kochi', 'Marine Drive, Kochi', 'Fort Kochi', 'Infopark, Kakkanad', 'SmartCity, Kakkanad', 'Tripunithura']
 const pendingDriver: AssignedDriver = { initials: '…', name: 'Driver assignment in progress', vehicle: 'Your zone is reserved', mode: 'feeder', assigned: false }
 const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8002/api'
 
