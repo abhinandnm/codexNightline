@@ -16,6 +16,10 @@ def create_app():
     CORS(app, resources={r'/api/*': {'origins': origins}})
     initialize()
 
+    @app.get('/')
+    def index():
+        return jsonify(service='kmrl-orbit-api', status='ok', health='/api/health', documentation={'stations':'/api/stations', 'clusters':'/api/clusters', 'admin':'/api/admin/overview'})
+
     @app.get('/api/health')
     def health(): return jsonify(status='ok', service='kmrl-orbit-api', database='ready')
 
