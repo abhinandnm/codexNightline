@@ -74,7 +74,7 @@ def create_app():
     @app.get('/api/bookings/<int:booking_id>')
     def booking_status(booking_id):
         with connect() as db:
-            booking = db.execute('SELECT b.*, c.status AS cluster_status, c.pickup_zone AS assigned_zone, d.name AS driver_name, d.vehicle AS driver_vehicle FROM bookings b LEFT JOIN clusters c ON b.cluster_id=c.id LEFT JOIN drivers d ON c.driver_id=d.id WHERE b.id=?', (booking_id,)).fetchone()
+            booking = db.execute('SELECT b.*, c.status AS cluster_status, c.passenger_count AS cluster_passenger_count, c.pickup_zone AS assigned_zone, d.name AS driver_name, d.vehicle AS driver_vehicle FROM bookings b LEFT JOIN clusters c ON b.cluster_id=c.id LEFT JOIN drivers d ON c.driver_id=d.id WHERE b.id=?', (booking_id,)).fetchone()
             if not booking: return jsonify(error='Booking not found.'), 404
             return jsonify(booking=row(booking))
 

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+.booking-status{display:grid;gap:7px;margin:15px 0;padding:12px;border:1px solid #cfe1d4;border-radius:13px;background:#f3f8f2}.booking-status p{display:flex;align-items:center;gap:6px;margin:0;color:#41685d;font-size:10px;font-weight:700}.booking-status svg{color:#1b7769}
 .route-card select{display:block;min-width:0;width:100%;max-width:100%;margin-top:4px;border:0;outline:0;background:white;color:#163d37;font-family:Manrope,sans-serif;font-size:13px;font-weight:800;text-overflow:ellipsis}
 @tailwind base;
 @tailwind components;
