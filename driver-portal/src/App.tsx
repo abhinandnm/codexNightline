@@ -67,8 +67,8 @@ export default function App() {
         if (!response.ok) throw new Error(result.error || 'Unable to complete trip.')
         setEarnings((current) => current + result.earnings)
         setTripHistory((current) => [{ id: activeCluster.id, route: `${activeCluster.origin} → ${activeCluster.destination}`, earnings: result.earnings, completedAt: new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit' }).format(new Date()) }, ...current])
-        setTrip('complete')
         await loadClusters()
+        setTrip('available')
       } catch (error) { setApiError(error instanceof Error ? error.message : 'Unable to complete trip.') }
     }
   }
@@ -78,7 +78,7 @@ export default function App() {
   const tripsView = trip === 'complete'
     ? <section className="completed"><CheckCircle2 size={42} /><h2>Trip completed</h2><p>Your earnings have been added to the wallet.</p><button className="primary" onClick={() => setTrip('available')}>Find next cluster <ChevronRight size={20} /></button></section>
     : !activeCluster
-      ? <section className="empty-state"><Users size={32} /><strong>No passenger clusters yet</strong><p>New Unified Bookings will appear here automatically.</p><button className="nav-button" onClick={() => void loadClusters()}><Clock3 size={18} /> Refresh bookings</button></section>
+      ? <section className="empty-state"><Users size={32} /><strong>No passenger clusters available at the moment</strong><p>New Unified Bookings will appear here automatically.</p><button className="nav-button" onClick={() => void loadClusters()}><Clock3 size={18} /> Refresh bookings</button></section>
       : <><div className="section-title"><div><small>LIVE PASSENGER CLUSTER</small><h2>{trip === 'available' ? 'Pickup available' : trip === 'accepted' ? 'Head to the station' : 'On the way together'}</h2></div><span className="cluster">{activeCluster.passenger_count} <Users size={14} /></span></div><section className="cluster-card"><div className="cluster-top"><span className="trip-icon"><Bike size={20} /></span><div><strong>{activeCluster.origin} → {activeCluster.destination}</strong><p><Clock3 size={13} /> {activeCluster.estimated_minutes} min · pickup cluster</p></div><span className="price">₹{activeCluster.fare}</span></div><div className="route-steps"><p><i /> {activeCluster.origin} Metro Station</p><p><i /> {activeCluster.pickup_zone}</p></div><div className="passenger-list"><small>PASSENGERS & FINAL DESTINATIONS</small>{activeCluster.passengers.map((passenger) => <p key={passenger.id}><strong>{passenger.passenger_name}</strong><span>{passenger.destination}</span></p>)}</div></section><button disabled={!online} className="primary" onClick={() => void advanceTrip()}>{trip === 'available' ? 'Accept cluster' : trip === 'accepted' ? 'Start pickup' : 'Complete trip'}<ChevronRight size={20} /></button><button className="nav-button" onClick={openNavigation}><Route size={18} /> Open navigation to station</button></>
 
   const historyView = <><div className="section-title"><div><small>RIDE HISTORY</small><h2>Completed trips</h2></div></div>{tripHistory.length === 0 ? <section className="empty-state"><Clock3 size={32} /><strong>No completed rides yet</strong><p>Complete an assigned passenger cluster to see it here.</p></section> : tripHistory.map((record) => <section className="history-card" key={record.id}><span className="trip-icon"><CheckCircle2 size={20} /></span><div><strong>{record.route}</strong><p>Completed at {record.completedAt}</p></div><span className="price">+₹{record.earnings}</span></section>)}</>
