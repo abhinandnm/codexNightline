@@ -7,6 +7,7 @@ from clustering import create_clusters
 
 load_dotenv()
 STATIONS = ['Aluva', 'Edappally', 'Kaloor', 'MG Road', 'Maharaja’s College', 'Vyttila', 'Pettta']
+DESTINATION_ZONES = {'Aluva': 'North gate · Zone A', 'Edappally': 'Metro feeder bay · Zone C', 'Kaloor': 'South gate · Zone B', 'MG Road': 'South gate · Zone B', 'Maharaja’s College': 'South gate · Zone B', 'Vyttila': 'Metro feeder bay · Zone C', 'Pettta': 'North gate · Zone A'}
 
 def row(data): return dict(data) if data else None
 
@@ -31,7 +32,7 @@ def create_app():
         data = request.get_json(silent=True) or {}
         if data.get('origin') not in STATIONS or data.get('destination') not in STATIONS: return jsonify(error='Select valid metro stations.'), 400
         orbit = data.get('journey_type') == 'orbit'
-        return jsonify(origin=data['origin'], destination=data['destination'], journey_type='orbit' if orbit else 'standard', fare=78 if orbit else 42, estimated_minutes=35 if orbit else 23, pickup_zone='South gate · Zone B' if orbit else None)
+        return jsonify(origin=data['origin'], destination=data['destination'], journey_type='orbit' if orbit else 'standard', fare=78 if orbit else 42, estimated_minutes=35 if orbit else 23, pickup_zone=DESTINATION_ZONES[data['destination']] if orbit else None)
 
     @app.post('/api/bookings')
     def book():
@@ -40,8 +41,9 @@ def create_app():
         if any(not data.get(key) for key in required): return jsonify(error='Missing booking details.'), 400
         if data['origin'] not in STATIONS or data['destination'] not in STATIONS or data['origin'] == data['destination']: return jsonify(error='Invalid journey route.'), 400
         orbit = data['journey_type'] == 'orbit'
+        pickup_zone = DESTINATION_ZONES[data['destination']] if orbit else None
         with connect() as db:
-            cursor = db.execute('INSERT INTO bookings(passenger_name,origin,destination,journey_type,pickup_zone,fare) VALUES(?,?,?,?,?,?)', (data['passenger_name'],data['origin'],data['destination'],'orbit' if orbit else 'standard',data.get('pickup_zone') if orbit else None,78 if orbit else 42))
+            cursor = db.execute('INSERT INTO bookings(passenger_name,origin,destination,journey_type,pickup_zone,fare) VALUES(?,?,?,?,?,?)', (data['passenger_name'],data['origin'],data['destination'],'orbit' if orbit else 'standard',pickup_zone,78 if orbit else 42))
             booking = row(db.execute('SELECT * FROM bookings WHERE id=?', (cursor.lastrowid,)).fetchone())
         return jsonify(booking=booking), 201
 

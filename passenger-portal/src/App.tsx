@@ -4,7 +4,6 @@ import {
   CreditCard, Footprints, MapPin, Navigation, QrCode, ShieldCheck, Sparkles,
   Ticket, TrainFront, UsersRound, WalletCards,
 } from 'lucide-react'
-import { bookJourney } from './api'
 
 type JourneyKind = 'standard' | 'orbit'
 
@@ -17,8 +16,7 @@ export default function App() {
   const [to, setTo] = useState('Maharaja’s College')
   const [pickup, setPickup] = useState(pickupZones[0])
   const [confirmed, setConfirmed] = useState(false)
-  const [booking, setBooking] = useState(false)
-  const [error, setError] = useState('')
+  const [matching, setMatching] = useState(false)
 
   const fares = useMemo(() => journeyKind === 'orbit'
     ? { amount: 78, label: 'Metro + shared last mile', saving: '₹24 less than a solo cab' }
@@ -29,17 +27,23 @@ export default function App() {
   }
 
   const submitBooking = async () => {
-    setBooking(true); setError('')
-    try { await bookJourney({ passenger_name: 'Abhinand Nm', origin: from, destination: to, journey_type: journeyKind, pickup_zone: journeyKind === 'orbit' ? pickup : undefined }); setConfirmed(true) }
-    catch (reason) { setError(reason instanceof Error ? reason.message : 'Could not reach Orbit API.') }
-    finally { setBooking(false) }
+    setMatching(true)
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8001/api'}/bookings`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({passenger_name:'Abhinand Nm', origin:from, destination:to, journey_type:journeyKind}) })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Booking failed')
+      if (result.booking.pickup_zone) setPickup(result.booking.pickup_zone)
+      await new Promise((resolve) => setTimeout(resolve, 7000))
+      setConfirmed(true)
+    } finally { setMatching(false) }
   }
+  if (matching) return <main className="app-shell matching"><div className="matching-orb"><Sparkles size={28}/></div><p className="overline dark">KOCHI METRO CONNECT</p><h1>Finding your best shared ride…</h1><p>We are grouping passengers heading closer to {to} and selecting the nearest pickup zone.</p><div className="matching-bar"><i /></div><small>This takes about 7 seconds</small></main>
   return (
     <main className="app-shell">
       <section className="hero-panel">
         <div className="topbar">
           <button className="icon-button" aria-label="Back"><ArrowLeft size={20} /></button>
-          <div className="brand"><span className="brand-mark">O</span><span>ORBIT</span></div>
+          <div className="brand"><span className="brand-mark">K</span><span>KOCHI METRO</span></div>
           <button className="icon-button notification" aria-label="Notifications"><Bell size={19} /><i /></button>
         </div>
         <div className="hero-copy">
@@ -59,15 +63,15 @@ export default function App() {
         <div className="section-heading"><div><p className="overline dark">CHOOSE YOUR JOURNEY</p><h2>Travel your way</h2></div><button className="date-button"><CalendarDays size={16} /> Today</button></div>
         <div className="journey-options">
           <JourneyOption selected={journeyKind === 'standard'} onClick={() => setJourneyKind('standard')} icon={<TrainFront />} title="Metro ticket" subtitle="Simple, direct, lowest fare" fare="₹42" />
-          <JourneyOption selected={journeyKind === 'orbit'} onClick={() => setJourneyKind('orbit')} icon={<Sparkles />} title="Orbit unified journey" subtitle="Metro + a shared ride to your door" fare="₹78" recommended />
+          <JourneyOption selected={journeyKind === 'orbit'} onClick={() => setJourneyKind('orbit')} icon={<Sparkles />} title="Kochi Metro Connect" subtitle="Metro + a shared ride to your door" fare="₹78" recommended />
         </div>
 
         {journeyKind === 'orbit' && <section className="orbit-details">
           <div className="orbit-heading"><div className="sparkle-orb"><Sparkles size={18} /></div><div><strong>Smarter together</strong><p>AI is matching your last-mile ride</p></div><span className="match-chip"><UsersRound size={14} /> 3 nearby</span></div>
           <div className="timeline">
             <TimelineRow icon={<TrainFront size={17} />} title="Board at Aluva" meta="Green line · 18 min" />
-            <TimelineRow icon={<Footprints size={17} />} title="Meet at pickup zone" meta="South gate · 3 min walk" />
-            <div className="pickup-select"><MapPin size={17} /><select value={pickup} onChange={(event) => setPickup(event.target.value)}>{pickupZones.map((zone) => <option key={zone}>{zone}</option>)}</select><ChevronDown size={16} /></div>
+            <TimelineRow icon={<Footprints size={17} />} title="AI-selected pickup zone" meta="Assigned after nearby destination grouping" />
+            <div className="pickup-select"><MapPin size={17} /><strong>{pickup}</strong><ChevronDown size={16} /></div>
             <TimelineRow icon={<Bike size={17} />} title="Share the last mile" meta="Weather-aware route · 12 min" last />
           </div>
         </section>}
@@ -76,7 +80,7 @@ export default function App() {
           <div><p className="fare-label">{fares.label}</p><p className="fare-saving"><ShieldCheck size={14} /> {fares.saving}</p></div>
           <strong>₹{fares.amount}</strong>
         </section>
-        <button className="primary-button" disabled={booking} onClick={submitBooking}>{booking ? 'Reserving journey…' : journeyKind === 'orbit' ? 'Book unified journey' : 'Continue with metro'} <span>→</span></button>{error && <p className="api-error">{error}</p>}
+        <button className="primary-button" onClick={submitBooking}>{journeyKind === 'orbit' ? 'Book unified journey' : 'Continue with metro'} <span>→</span></button>
         <div className="bottom-note"><WalletCards size={16} /> Payment stays together in one secure checkout</div>
       </section>
     </main>
@@ -94,5 +98,5 @@ function TimelineRow({ icon, title, meta, last = false }: { icon: React.ReactNod
 }
 
 function Confirmation({ from, to, pickup, fare, orbit, onBack }: { from: string; to: string; pickup: string; fare: number; orbit: boolean; onBack: () => void }) {
-  return <main className="app-shell confirmation-page"><section className="confirm-hero"><div className="topbar"><button className="icon-button light" onClick={onBack} aria-label="Back"><ArrowLeft size={20} /></button><div className="brand light-brand"><span className="brand-mark">O</span><span>ORBIT</span></div><span /></div><div className="success-ring"><Ticket size={31} /></div><p className="overline">YOUR JOURNEY IS RESERVED</p><h1>See you at the station.</h1><p className="confirm-subtitle">Your QR ticket and {orbit ? 'shared ride' : 'metro trip'} are ready.</p></section><section className="ticket-sheet"><div className="ticket-route"><div><small>FROM</small><strong>{from}</strong></div><Navigation size={20} /><div className="right"><small>TO</small><strong>{to}</strong></div></div><div className="ticket-meta"><span><Clock3 size={16} /> Depart in 14 min</span><span><CreditCard size={16} /> ₹{fare} paid</span></div>{orbit && <div className="driver-card"><div className="driver-avatar">RK</div><div><small>YOUR ORBIT DRIVER</small><strong>Rakesh Kumar · KL 07 CD 4531</strong><p><MapPin size={14} /> {pickup}</p></div><button className="icon-button"><Navigation size={18} /></button></div>}<div className="qr-box"><QrCode size={78} /><div><strong>Show at the gate</strong><p>Valid for one passenger · Today</p></div></div><button className="primary-button" onClick={onBack}>View journey live <span>→</span></button></section></main>
+  return <main className="app-shell confirmation-page"><section className="confirm-hero"><div className="topbar"><button className="icon-button light" onClick={onBack} aria-label="Back"><ArrowLeft size={20} /></button><div className="brand light-brand"><span className="brand-mark">K</span><span>KOCHI METRO</span></div><span /></div><div className="success-ring"><Ticket size={31} /></div><p className="overline">YOUR JOURNEY IS RESERVED</p><h1>See you at the station.</h1><p className="confirm-subtitle">Your QR ticket and {orbit ? 'shared ride' : 'metro trip'} are ready.</p></section><section className="ticket-sheet"><div className="ticket-route"><div><small>FROM</small><strong>{from}</strong></div><Navigation size={20} /><div className="right"><small>TO</small><strong>{to}</strong></div></div><div className="ticket-meta"><span><Clock3 size={16} /> Depart in 14 min</span><span><CreditCard size={16} /> ₹{fare} paid</span></div>{orbit && <div className="driver-card"><div className="driver-avatar">RK</div><div><small>YOUR KOCHI METRO DRIVER</small><strong>Rakesh Kumar · KL 07 CD 4531</strong><p><MapPin size={14} /> {pickup}</p></div><button className="icon-button"><Navigation size={18} /></button></div>}<div className="qr-box"><QrCode size={78} /><div><strong>Show at the gate</strong><p>Valid for one passenger · Today</p></div></div><button className="primary-button" onClick={onBack}>View journey live <span>→</span></button></section></main>
 }
