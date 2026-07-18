@@ -9,7 +9,7 @@ type JourneyKind = 'standard' | 'orbit'
 
 const stations = ['Aluva', 'Edappally', 'Kaloor', 'MG Road', 'Maharaja’s College', 'Vyttila', 'Pettta']
 const pickupZones = ['South gate · Zone B', 'North gate · Zone A', 'Metro feeder bay · Zone C']
-const nearbyLocations = ['Aluva Metro Station', 'Aluva Bus Stand', 'Aluva Mahadeva Temple', 'Companypady', 'UC College, Aluva', 'Desom, Aluva', 'Infopark, Kakkanad', 'Marine Drive, Kochi']
+const nearbyLocations = ['Aluva Metro Station', 'Aluva Bus Stand', 'Aluva Mahadeva Temple', 'Companypady', 'UC College, Aluva', 'Desom, Aluva', 'Edappally Metro Station', 'Lulu Mall, Edappally', 'Kaloor Metro Station', 'MG Road Metro Station', 'Maharaja’s College Metro Station', 'Vyttila Metro Station', 'Pettta Metro Station', 'Infopark, Kakkanad', 'Marine Drive, Kochi']
 
 export default function App() {
   const [journeyKind, setJourneyKind] = useState<JourneyKind>('orbit')
