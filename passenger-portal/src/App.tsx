@@ -17,6 +17,7 @@ export default function App() {
   const [pickup, setPickup] = useState(pickupZones[0])
   const [confirmed, setConfirmed] = useState(false)
   const [matching, setMatching] = useState(false)
+  const [tripStarted, setTripStarted] = useState(false)
 
   const fares = useMemo(() => journeyKind === 'orbit'
     ? { amount: 78, label: 'Metro + shared last mile', saving: '₹24 less than a solo cab' }
@@ -34,10 +35,14 @@ export default function App() {
       if (!response.ok) throw new Error(result.error || 'Booking failed')
       if (result.booking.pickup_zone) setPickup(result.booking.pickup_zone)
       await new Promise((resolve) => setTimeout(resolve, 7000))
+      setMatching(false)
+      setTripStarted(true)
+      await new Promise((resolve) => setTimeout(resolve, 5000))
       setConfirmed(true)
-    } finally { setMatching(false) }
+    } finally { setMatching(false); setTripStarted(false) }
   }
   if (matching) return <main className="app-shell matching"><div className="matching-orb"><Sparkles size={28}/></div><p className="overline dark">KOCHI METRO CONNECT</p><h1>Finding your best shared ride…</h1><p>We are grouping passengers heading closer to {to} and selecting the nearest pickup zone.</p><div className="matching-bar"><i /></div><small>This takes about 7 seconds</small></main>
+  if (tripStarted) return <main className="app-shell matching"><div className="matching-orb"><TrainFront size={28}/></div><p className="overline dark">KOCHI METRO CONNECT</p><h1>Your metro trip has started.</h1><p>We are finalising the best pickup zone for your group. Your zone guidance will appear in 5 seconds.</p><div className="matching-bar"><i /></div><small>Preparing your last-mile handoff</small></main>
   return (
     <main className="app-shell">
       <section className="hero-panel">
@@ -98,5 +103,5 @@ function TimelineRow({ icon, title, meta, last = false }: { icon: React.ReactNod
 }
 
 function Confirmation({ from, to, pickup, fare, orbit, onBack }: { from: string; to: string; pickup: string; fare: number; orbit: boolean; onBack: () => void }) {
-  return <main className="app-shell confirmation-page"><section className="confirm-hero"><div className="topbar"><button className="icon-button light" onClick={onBack} aria-label="Back"><ArrowLeft size={20} /></button><div className="brand light-brand"><span className="brand-mark">K</span><span>KOCHI METRO</span></div><span /></div><div className="success-ring"><Ticket size={31} /></div><p className="overline">YOUR JOURNEY IS RESERVED</p><h1>See you at the station.</h1><p className="confirm-subtitle">Your QR ticket and {orbit ? 'shared ride' : 'metro trip'} are ready.</p></section><section className="ticket-sheet"><div className="ticket-route"><div><small>FROM</small><strong>{from}</strong></div><Navigation size={20} /><div className="right"><small>TO</small><strong>{to}</strong></div></div><div className="ticket-meta"><span><Clock3 size={16} /> Depart in 14 min</span><span><CreditCard size={16} /> ₹{fare} paid</span></div>{orbit && <div className="driver-card"><div className="driver-avatar">RK</div><div><small>YOUR KOCHI METRO DRIVER</small><strong>Rakesh Kumar · KL 07 CD 4531</strong><p><MapPin size={14} /> {pickup}</p></div><button className="icon-button"><Navigation size={18} /></button></div>}<div className="qr-box"><QrCode size={78} /><div><strong>Show at the gate</strong><p>Valid for one passenger · Today</p></div></div><button className="primary-button" onClick={onBack}>View journey live <span>→</span></button></section></main>
+  return <main className="app-shell confirmation-page"><section className="confirm-hero"><div className="topbar"><button className="icon-button light" onClick={onBack} aria-label="Back"><ArrowLeft size={20} /></button><div className="brand light-brand"><span className="brand-mark">K</span><span>KOCHI METRO</span></div><span /></div><div className="success-ring"><MapPin size={31} /></div><p className="overline">YOUR PICKUP ZONE IS READY</p><h1>Go to your assigned zone.</h1><p className="confirm-subtitle">Walk to the zone below and wait for your shared cab towards {to}.</p></section><section className="ticket-sheet"><div className="ticket-route"><div><small>FROM</small><strong>{from}</strong></div><Navigation size={20} /><div className="right"><small>TO</small><strong>{to}</strong></div></div><div className="ticket-meta"><span><Clock3 size={16} /> Depart in 14 min</span><span><CreditCard size={16} /> ₹{fare} paid</span></div>{orbit && <div className="driver-card"><div className="driver-avatar">RK</div><div><small>SYSTEM-ASSIGNED PICKUP ZONE</small><strong>{pickup}</strong><p><MapPin size={14} /> Wait here for your cab after metro exit</p></div><button className="icon-button"><Navigation size={18} /></button></div>}<div className="qr-box"><QrCode size={78} /><div><strong>Show at the metro gate</strong><p>Then follow the zone guidance in this app.</p></div></div><button className="primary-button" onClick={onBack}>I’m heading to the zone <span>→</span></button></section></main>
 }
