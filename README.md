@@ -45,7 +45,6 @@ The product focuses on:
 
 - KMRL receives a proposed **15% commission** on each last-mile trip completed by a partner driver through the Driver Portal.
 - For a KMRL-operated feeder bus, KMRL retains **100% of the applicable feeder fare** through the unified payment flow.
-- API-backed bookings, driver acceptance, completion status, and wallet records create an auditable settlement trail for every last-mile transaction.
 - The model turns fragmented informal last-mile payments into a measurable KMRL revenue channel while keeping shared rides more affordable for passengers.
 
 ## Features
