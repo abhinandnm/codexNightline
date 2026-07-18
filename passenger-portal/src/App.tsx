@@ -19,6 +19,7 @@ export default function App() {
   const [pickup, setPickup] = useState(pickupZones[0])
   const [confirmed, setConfirmed] = useState(false)
   const [matching, setMatching] = useState(false)
+  const [boarding, setBoarding] = useState(false)
   const [tripStarted, setTripStarted] = useState(false)
 
   const fares = useMemo(() => journeyKind === 'orbit'
@@ -38,13 +39,14 @@ export default function App() {
       if (result.booking.pickup_zone) setPickup(result.booking.pickup_zone)
       await new Promise((resolve) => setTimeout(resolve, 10000))
       setMatching(false)
-      setTripStarted(true)
-      await new Promise((resolve) => setTimeout(resolve, 5000))
-      setConfirmed(true)
-    } finally { setMatching(false); setTripStarted(false) }
+      setBoarding(true)
+    } finally { setMatching(false) }
   }
-  if (matching) return <main className="app-shell matching"><div className="matching-orb"><Sparkles size={28}/></div><p className="overline dark">UNIFIED BOOKING</p><h1>Finding your best shared ride…</h1><p>We are grouping passengers heading closer to {to} and selecting the nearest pickup zone.</p><div className="matching-bar"><i /></div><small>This takes about 7 seconds</small></main>
-  if (tripStarted) return <main className="app-shell matching"><div className="matching-orb"><TrainFront size={28}/></div><p className="overline dark">UNIFIED BOOKING</p><h1>Your metro trip has started.</h1><p>We are finalising the best pickup zone for your group. Your zone guidance will appear in 5 seconds.</p><div className="matching-bar"><i /></div><small>Preparing your last-mile handoff</small></main>
+  const confirmBoarding = async () => { setBoarding(false); setTripStarted(true); await new Promise((resolve) => setTimeout(resolve, 5000)); setTripStarted(false); setConfirmed(true) }
+  const rebook = () => { setBoarding(false); setMatching(false); setTripStarted(false); setPickup(pickupZones[0]) }
+  if (matching) return <main className="app-shell matching"><div className="matching-orb"><Sparkles size={28}/></div><p className="overline dark">UNIFIED BOOKING</p><h1>Preparing your unified journey…</h1><p>We are reserving your metro ticket and last-mile ride.</p><div className="matching-bar"><i /></div><small>This takes about 10 seconds</small></main>
+  if (boarding) return <main className="app-shell matching"><div className="matching-orb"><MapPin size={28}/></div><p className="overline dark">NEXT STEP</p><h1>Head over to {from}.</h1><p>Have you boarded the metro at {from}?</p><button className="primary-button" onClick={() => void confirmBoarding()}>Yes, I have boarded <span>→</span></button><button className="rebook-button" onClick={rebook}>Rebook journey</button></main>
+  if (tripStarted) return <main className="app-shell matching"><div className="matching-orb"><TrainFront size={28}/></div><p className="overline dark">UNIFIED BOOKING</p><h1>Your metro journey has started.</h1><p>We will reveal your pickup zone when you arrive at the nearest station.</p><div className="matching-bar"><i /></div><small>Travelling towards your handoff station</small></main>
   return (
     <main className="app-shell">
       <section className="hero-panel">
@@ -75,7 +77,7 @@ export default function App() {
         </div>
 
         {journeyKind === 'orbit' && <section className="orbit-details">
-          <div className="orbit-heading"><div className="sparkle-orb"><Sparkles size={18} /></div><div><strong>Smarter together</strong><p>AI is matching your last-mile ride</p></div><span className="match-chip"><UsersRound size={14} /> 3 nearby</span></div>
+          <div className="orbit-heading"><div className="sparkle-orb"><Sparkles size={18} /></div><div><strong>One ticket, one journey</strong><p>Metro and shared last-mile travel in one booking</p></div><span className="match-chip"><UsersRound size={14} /> 3 nearby</span></div>
           <div className="timeline">
             <TimelineRow icon={<TrainFront size={17} />} title="Board at your metro station" meta="Your ticket covers the metro segment" />
             <TimelineRow icon={<Footprints size={17} />} title="Arrive at the nearest metro station" meta="Zone guidance appears only after arrival" />
