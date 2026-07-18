@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowLeft, Bell, Bike, CalendarDays, ChevronDown, Clock3, CloudRain,
   CreditCard, Footprints, MapPin, Navigation, QrCode, ShieldCheck, Sparkles,
@@ -6,12 +6,14 @@ import {
 } from 'lucide-react'
 
 type JourneyKind = 'standard' | 'orbit'
+type AssignedDriver = { initials: string; name: string; vehicle: string; mode: 'cab' | 'feeder'; assigned: boolean }
 
 const stations = ['Aluva', 'Edappally', 'Kaloor', 'MG Road', 'Maharaja’s College', 'Vyttila', 'Pettta']
 const pickupZones = ['South gate · Zone B', 'North gate · Zone A', 'Metro feeder bay · Zone C']
 const metroStations = ['Aluva Metro Station', 'Edappally Metro Station', 'Kaloor Metro Station', 'MG Road Metro Station', 'Maharaja’s College Metro Station', 'Vyttila Metro Station', 'Pettta Metro Station']
 const finalDestinations = ['Aluva Bus Stand', 'Aluva Mahadeva Temple', 'UC College, Aluva', 'Lulu Mall, Edappally', 'Infopark, Kakkanad', 'Marine Drive, Kochi', 'Fort Kochi', 'Tripunithura']
-const drivers = [{ initials: 'RK', name: 'Rakesh Kumar', vehicle: 'KL 07 CD 4531', mode: 'cab' }, { initials: 'AN', name: 'Anjali Nair', vehicle: 'KL 41 M 7812', mode: 'feeder' }, { initials: 'SP', name: 'Sreejith Paul', vehicle: 'KL 39 J 2046', mode: 'cab' }]
+const pendingDriver: AssignedDriver = { initials: '…', name: 'Driver assignment in progress', vehicle: 'Your zone is reserved', mode: 'feeder', assigned: false }
+const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8002/api'
 
 export default function App() {
   const [journeyKind, setJourneyKind] = useState<JourneyKind>('orbit')
@@ -22,12 +24,30 @@ export default function App() {
   const [matching, setMatching] = useState(false)
   const [boarding, setBoarding] = useState(false)
   const [tripStarted, setTripStarted] = useState(false)
-  const [driver, setDriver] = useState(drivers[0])
+  const [driver, setDriver] = useState<AssignedDriver>(pendingDriver)
+  const [bookingId, setBookingId] = useState<number | null>(null)
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
   const [signedIn, setSignedIn] = useState(false)
   const [loginError, setLoginError] = useState('')
   const [bookingError, setBookingError] = useState('')
+
+  useEffect(() => {
+    if (!bookingId || journeyKind !== 'orbit') return
+    const refreshDriver = async () => {
+      try {
+        const response = await fetch(`${apiBase}/bookings/${bookingId}`)
+        const result = await response.json()
+        if (response.ok && result.booking.driver_name) {
+          const name = result.booking.driver_name as string
+          setDriver({ initials: name.split(/\s+/).map((part: string) => part[0]).join('').slice(0, 2).toUpperCase(), name, vehicle: result.booking.driver_vehicle || 'Kochi Metro feeder', mode: 'feeder', assigned: true })
+        }
+      } catch { /* The booking flow remains usable while the next poll retries. */ }
+    }
+    void refreshDriver()
+    const timer = window.setInterval(() => void refreshDriver(), 3000)
+    return () => window.clearInterval(timer)
+  }, [bookingId, journeyKind])
 
   const fares = useMemo(() => journeyKind === 'orbit'
     ? { amount: 78, label: 'Metro + shared last mile', saving: '₹24 less than a solo cab' }
@@ -42,11 +62,12 @@ export default function App() {
   const submitBooking = async () => {
     setMatching(true); setBookingError('')
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8002/api'}/bookings`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({passenger_name:userName.trim(), origin:from, destination:to, journey_type:journeyKind}) })
+      const response = await fetch(`${apiBase}/bookings`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({passenger_name:userName.trim(), origin:from, destination:to, journey_type:journeyKind}) })
       const result = await response.json()
       if (!response.ok) throw new Error(result.error || 'Booking failed')
       if (result.booking.pickup_zone) setPickup(result.booking.pickup_zone)
-      setDriver(drivers[Math.floor(Math.random() * drivers.length)])
+      setBookingId(result.booking.id)
+      setDriver(pendingDriver)
       await new Promise((resolve) => setTimeout(resolve, 10000))
       setMatching(false)
       setBoarding(true)
@@ -118,7 +139,7 @@ function TimelineRow({ icon, title, meta, last = false }: { icon: React.ReactNod
   return <div className="timeline-row"><div className="timeline-icon">{icon}{!last && <span />}</div><div><strong>{title}</strong><p>{meta}</p></div></div>
 }
 
-function Confirmation({ from, to, pickup, driver, fare, orbit, onBack }: { from: string; to: string; pickup: string; driver: typeof drivers[number]; fare: number; orbit: boolean; onBack: () => void }) {
+function Confirmation({ from, to, pickup, driver, fare, orbit, onBack }: { from: string; to: string; pickup: string; driver: AssignedDriver; fare: number; orbit: boolean; onBack: () => void }) {
   const [foundRide, setFoundRide] = useState(false)
   const rideLabel = driver.mode === 'feeder' ? 'feeder' : 'cab'
   return <main className="app-shell confirmation-page"><section className="confirm-hero"><div className="topbar"><button className="icon-button light" onClick={onBack} aria-label="Back"><ArrowLeft size={20} /></button><div className="brand light-brand"><span className="brand-mark">K</span><span>KOCHI METRO</span></div><span /></div><div className="success-ring"><MapPin size={31} /></div><p className="overline">YOUR PICKUP ZONE IS READY</p><h1>{foundRide ? 'Thank you for using Kochi Metro.' : 'Go to your assigned zone.'}</h1><p className="confirm-subtitle">{foundRide ? `Your ${rideLabel} will leave for ${to} shortly.` : `Walk to the zone below and wait for your assigned ${rideLabel}.`}</p></section><section className="ticket-sheet"><div className="ticket-route"><div><small>FROM</small><strong>{from}</strong></div><Navigation size={20} /><div className="right"><small>TO</small><strong>{to}</strong></div></div><div className="ticket-meta"><span><Clock3 size={16} /> Depart in 14 min</span><span><CreditCard size={16} /> ₹{fare} paid</span></div>{orbit && <div className="driver-card"><div className="driver-avatar">{driver.initials}</div><div><small>{driver.mode.toUpperCase()} WAITING AT YOUR ZONE</small><strong>{driver.name} · {driver.vehicle}</strong><p><MapPin size={14} /> {pickup}</p></div><button className="icon-button"><Navigation size={18} /></button></div>}<div className="qr-box"><QrCode size={78} /><div><strong>{foundRide ? `Leaving for ${to}` : `Have you found your ${rideLabel}?`}</strong><p>{foundRide ? 'Your final leg is now underway.' : `Look for ${driver.name} at the assigned zone.`}</p></div></div>{foundRide ? <button className="primary-button" onClick={onBack}>Book another journey <span>→</span></button> : <><button className="primary-button" onClick={() => setFoundRide(true)}>Yes, I found my {rideLabel} <span>→</span></button><button className="rebook-button" onClick={() => window.alert('Kochi Metro support has been notified. A travel assistant will contact you shortly.')}>Trouble finding your travel buddy? Get help</button></>}</section></main>
