@@ -1,0 +1,17 @@
+[Unit]
+Description=KMRL Orbit Flask API
+After=network.target
+
+[Service]
+User=kmrlorbit
+Group=www-data
+WorkingDirectory=/opt/kmrl-orbit/backend
+EnvironmentFile=/etc/kmrl-orbit/api.env
+ExecStart=/opt/kmrl-orbit/backend/.venv/bin/gunicorn --config gunicorn.conf.py wsgi:app
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
