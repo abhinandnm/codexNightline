@@ -10,8 +10,32 @@ KMRL Orbit is an AI-assisted last-mile journey layer for metro passengers. This 
 
 ## Live portals
 
-- [Passenger Booking Portal](https://kochi-metro-booking-p9abxo2rx-abhinandnms-projects.vercel.app/) — live ticket and unified journey booking experience
+- [Passenger Booking Portal](https://kochi-metro-booking.vercel.app/) — live ticket and unified journey booking experience
 - [Driver Portal](https://driverportal-rho.vercel.app/) — live driver cluster, trip, and earnings experience
+
+### Production API
+
+- [AWS EC2 API health](https://16-170-15-32.sslip.io/api/health) — Flask API deployed behind Nginx, Gunicorn, systemd, and HTTPS
+
+## What KMRL Orbit solves
+
+Metro adoption often breaks at the first and last mile: passengers do not know how to reliably reach a station or complete the trip after exiting one. This creates dependence on private vehicles and fragmented, untracked payments. KMRL Orbit creates a single passenger journey from station entry through shared feeder transport to the final destination.
+
+The product focuses on:
+
+- reducing uncertainty around the last-mile handoff with station, zone, and driver guidance
+- grouping riders travelling toward nearby final destinations to make shared travel practical
+- giving drivers ready-made passenger clusters instead of individual, inefficient trips
+- providing a unified journey experience instead of disconnected metro and cab bookings
+
+## Revenue leakage prevention
+
+- Each passenger journey is created through the Flask API and stored with a booking status, fare, origin, final destination, assigned zone, and timestamp.
+- Unified Booking keeps the metro and last-mile fare in one tracked record instead of relying on informal, unrecorded feeder payments.
+- Driver acceptance is API-backed: a cluster can be claimed only by an online driver, which creates a clear assignment trail.
+- Driver wallet and earnings data supports reconciliation of completed feeder trips.
+- The API’s admin overview exposes booking, open-cluster, and driver-availability counts for operational monitoring.
+- QR-ticket and gate guidance give the prototype a clear place to connect ticket validation and payment reconciliation in a production KMRL integration.
 
 ## Features
 
@@ -43,6 +67,7 @@ KMRL Orbit is an AI-assisted last-mile journey layer for metro passengers. This 
 
 - Passenger and Driver applications are independently deployed to Vercel.
 - Flask API is deployed on EC2 and served through Nginx.
+- The deployed API is secured with HTTPS, Gunicorn workers, systemd restart management, and Nginx reverse proxying on AWS EC2.
 - EC2 deployment and Vercel environment-variable instructions: [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## Local development
