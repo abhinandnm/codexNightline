@@ -1,6 +1,6 @@
-# KMRL Orbit
+# Kochi Metro Unified Ticketing
 
-KMRL Orbit is an AI-assisted last-mile journey layer for metro passengers. This repository contains independent passenger and driver React portals plus a Flask REST API.
+Kochi Metro Unified Ticketing is an AI-assisted metro and last-mile journey platform. It brings ticket booking, passenger grouping, shared feeder transport, pickup-zone guidance, and driver operations into one connected experience. This repository contains independent passenger and driver React portals plus a Flask REST API, deployed in production on AWS EC2.
 
 ## Applications
 
@@ -17,9 +17,9 @@ KMRL Orbit is an AI-assisted last-mile journey layer for metro passengers. This 
 
 - [AWS EC2 API health](https://16-170-15-32.sslip.io/api/health) — Flask API deployed behind Nginx, Gunicorn, systemd, and HTTPS
 
-## What KMRL Orbit solves
+## What Unified Ticketing solves
 
-Metro adoption often breaks at the first and last mile: passengers do not know how to reliably reach a station or complete the trip after exiting one. This creates dependence on private vehicles and fragmented, untracked payments. KMRL Orbit creates a single passenger journey from station entry through shared feeder transport to the final destination.
+Metro adoption often breaks at the first and last mile: passengers do not know how to reliably reach a station or complete the trip after exiting one. This creates dependence on private vehicles and fragmented, untracked payments. Unified Ticketing creates a single passenger journey from station entry through shared feeder transport to the final destination.
 
 The product focuses on:
 
@@ -66,7 +66,7 @@ The product focuses on:
 ## Deployment
 
 - Passenger and Driver applications are independently deployed to Vercel.
-- Flask API is deployed on EC2 and served through Nginx.
+- Flask API is deployed on AWS EC2 and served through Nginx.
 - The deployed API is secured with HTTPS, Gunicorn workers, systemd restart management, and Nginx reverse proxying on AWS EC2.
 - EC2 deployment and Vercel environment-variable instructions: [DEPLOYMENT.md](DEPLOYMENT.md)
 
