@@ -41,8 +41,8 @@ export default function App() {
       setConfirmed(true)
     } finally { setMatching(false); setTripStarted(false) }
   }
-  if (matching) return <main className="app-shell matching"><div className="matching-orb"><Sparkles size={28}/></div><p className="overline dark">KOCHI METRO CONNECT</p><h1>Finding your best shared ride…</h1><p>We are grouping passengers heading closer to {to} and selecting the nearest pickup zone.</p><div className="matching-bar"><i /></div><small>This takes about 7 seconds</small></main>
-  if (tripStarted) return <main className="app-shell matching"><div className="matching-orb"><TrainFront size={28}/></div><p className="overline dark">KOCHI METRO CONNECT</p><h1>Your metro trip has started.</h1><p>We are finalising the best pickup zone for your group. Your zone guidance will appear in 5 seconds.</p><div className="matching-bar"><i /></div><small>Preparing your last-mile handoff</small></main>
+  if (matching) return <main className="app-shell matching"><div className="matching-orb"><Sparkles size={28}/></div><p className="overline dark">UNIFIED BOOKING</p><h1>Finding your best shared ride…</h1><p>We are grouping passengers heading closer to {to} and selecting the nearest pickup zone.</p><div className="matching-bar"><i /></div><small>This takes about 7 seconds</small></main>
+  if (tripStarted) return <main className="app-shell matching"><div className="matching-orb"><TrainFront size={28}/></div><p className="overline dark">UNIFIED BOOKING</p><h1>Your metro trip has started.</h1><p>We are finalising the best pickup zone for your group. Your zone guidance will appear in 5 seconds.</p><div className="matching-bar"><i /></div><small>Preparing your last-mile handoff</small></main>
   return (
     <main className="app-shell">
       <section className="hero-panel">
@@ -68,7 +68,7 @@ export default function App() {
         <div className="section-heading"><div><p className="overline dark">CHOOSE YOUR JOURNEY</p><h2>Travel your way</h2></div><button className="date-button"><CalendarDays size={16} /> Today</button></div>
         <div className="journey-options">
           <JourneyOption selected={journeyKind === 'standard'} onClick={() => setJourneyKind('standard')} icon={<TrainFront />} title="Metro ticket" subtitle="Simple, direct, lowest fare" fare="₹42" />
-          <JourneyOption selected={journeyKind === 'orbit'} onClick={() => setJourneyKind('orbit')} icon={<Sparkles />} title="Kochi Metro Connect" subtitle="Metro + a shared ride to your door" fare="₹78" recommended />
+          <JourneyOption selected={journeyKind === 'orbit'} onClick={() => setJourneyKind('orbit')} icon={<Sparkles />} title="Unified Booking" subtitle="Metro + a shared ride to your door" fare="₹78" recommended />
         </div>
 
         {journeyKind === 'orbit' && <section className="orbit-details">
